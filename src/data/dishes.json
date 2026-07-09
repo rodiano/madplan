@@ -1,0 +1,14 @@
+[
+  { "id": 1, "navn": "Lasagne" },
+  { "id": 2, "navn": "Kylling i karry" },
+  { "id": 3, "navn": "Boller i karry" },
+  { "id": 4, "navn": "Chili con carne" },
+  { "id": 5, "navn": "Fiskefrikadeller med kartofler" },
+  { "id": 6, "navn": "Pasta carbonara" },
+  { "id": 7, "navn": "Tacos" },
+  { "id": 8, "navn": "Tomatsuppe med brød" },
+  { "id": 9, "navn": "Hakkebøf med bløde løg" },
+  { "id": 10, "navn": "Vegetarlasagne" },
+  { "id": 11, "navn": "Frikadeller med kartoffelsalat" },
+  { "id": 12, "navn": "Risotto med svampe" }
+]

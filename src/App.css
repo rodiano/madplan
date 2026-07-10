@@ -1,7 +1,10 @@
 .app-shell {
   display: grid;
+  grid-template-rows: auto 1fr;
   gap: 8px;
   padding: 8px;
+  height: 100%;
+  overflow: hidden;
 }
 
 .auth-shell {
@@ -76,6 +79,7 @@
   padding: 10px;
   display: grid;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .hero-header {
@@ -175,7 +179,9 @@
 .planner-panel {
   padding: 8px;
   display: grid;
+  grid-template-rows: auto 1fr;
   gap: 6px;
+  overflow: hidden;
 }
 
 .planner-toolbar {
@@ -183,6 +189,7 @@
   grid-template-columns: auto 1fr auto;
   gap: 6px;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .planner-heading {
@@ -224,6 +231,21 @@
 .week-grid {
   display: grid;
   gap: 6px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.week-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.week-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.week-grid::-webkit-scrollbar-thumb {
+  background: var(--soft-border);
+  border-radius: 3px;
 }
 
 .week-nav-button {
@@ -244,6 +266,7 @@
   border-radius: 10px;
   background: var(--card-bg);
   border: 1px solid var(--soft-border);
+  flex-shrink: 0;
 }
 
 .day-header {
@@ -430,6 +453,8 @@
   padding: 12px;
   display: grid;
   gap: 10px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .admin-modal {
@@ -577,7 +602,8 @@
 
 @media (max-width: 1024px) and (orientation: portrait) {
   .app-shell {
-    padding-bottom: calc(88px + env(safe-area-inset-bottom));
+    padding: 8px;
+    height: 100dvh;
   }
 
   .hero-actions {

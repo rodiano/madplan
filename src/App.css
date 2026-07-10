@@ -55,7 +55,7 @@
   border-radius: 10px;
   border: 1px solid var(--soft-border);
   background: var(--button-bg);
-  color: var(--text-h);
+  color: #fff;
   padding: 8px;
   font: inherit;
   cursor: pointer;
@@ -211,7 +211,7 @@
 
 .planner-toolbar button {
   background: var(--button-bg);
-  color: var(--text-h);
+  color: #fff;
   cursor: pointer;
   transition:
     transform 0.18s ease,
@@ -256,6 +256,10 @@
   display: grid;
   place-items: center;
   line-height: 1;
+  background: var(--button-bg);
+  color: #fff;
+  border: 1px solid var(--soft-border);
+  cursor: pointer;
 }
 
 .day-card {
@@ -490,7 +494,7 @@
   border-radius: 8px;
   border: 1px solid var(--soft-border);
   background: var(--button-bg);
-  color: var(--text-h);
+  color: #fff;
   padding: 5px 8px;
   font: inherit;
   cursor: pointer;
@@ -540,7 +544,7 @@
   border-radius: 10px;
   border: 1px solid var(--soft-border);
   background: var(--button-bg);
-  color: var(--text-h);
+  color: #fff;
   padding: 7px 10px;
   font: inherit;
   cursor: pointer;

@@ -91,8 +91,8 @@
 }
 
 .icon-action-button {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border: 1px solid var(--soft-border);
   border-radius: 999px;
   background: var(--button-bg);
@@ -134,6 +134,19 @@
   font-size: 0.72rem;
   color: var(--accent);
   font-weight: 700;
+}
+
+.eyebrow-button {
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-weight: 700;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
 .hero-text {
@@ -419,6 +432,51 @@
   gap: 10px;
 }
 
+.admin-modal {
+  width: min(420px, 100%);
+  padding: 8px;
+  gap: 8px;
+}
+
+.admin-dish-list {
+  display: grid;
+  gap: 4px;
+  max-height: 48svh;
+  overflow-y: auto;
+}
+
+.admin-dish-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 4px;
+}
+
+.admin-dish-row input {
+  border-radius: 8px;
+  border: 1px solid var(--soft-border);
+  background: var(--card-bg);
+  color: var(--text-h);
+  padding: 6px;
+  font: inherit;
+  font-size: 0.78rem;
+}
+
+.admin-dish-row button {
+  border-radius: 8px;
+  border: 1px solid var(--soft-border);
+  background: var(--button-bg);
+  color: var(--text-h);
+  padding: 5px 8px;
+  font: inherit;
+  cursor: pointer;
+  font-size: 0.76rem;
+}
+
+.admin-dish-row button.danger {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+}
+
 .modal-panel h3 {
   margin: 0;
   color: var(--text-h);
@@ -514,5 +572,43 @@
 
   .week-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+  .app-shell {
+    padding-bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+
+  .hero-actions {
+    position: fixed;
+    left: 50%;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    z-index: 50;
+    gap: 10px;
+    background: var(--panel-bg);
+    border: 1px solid var(--soft-border);
+    border-radius: 999px;
+    padding: 8px 10px;
+    box-shadow: var(--shadow);
+  }
+
+  .icon-action-button {
+    width: 50px;
+    height: 50px;
+  }
+
+  .hero-actions .icon-action-button:first-child {
+    order: 2;
+  }
+
+  .hero-actions .icon-action-button:last-child {
+    order: 1;
+  }
+
+  .icon-action-button svg {
+    width: 20px;
+    height: 20px;
   }
 }

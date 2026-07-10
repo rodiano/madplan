@@ -200,6 +200,12 @@ function App() {
   })
   const baseWeek = useMemo(() => startOfWeek(new Date()), [])
   const [dishes, setDishes] = useState<Dish[]>(initialDishes)
+  const [secretTapCount, setSecretTapCount] = useState(0)
+  const [lastSecretTapAt, setLastSecretTapAt] = useState(0)
+  const [isSecretModalOpen, setIsSecretModalOpen] = useState(false)
+  const [dishDraftsById, setDishDraftsById] = useState<Record<number, string>>({})
+  const [secretError, setSecretError] = useState('')
+  const [secretBusyDishId, setSecretBusyDishId] = useState<number | null>(null)
   const [weekOffset, setWeekOffset] = useState(0)
   const [activeEditableKey, setActiveEditableKey] = useState<string | null>(null)
   const [dishSearchByDay, setDishSearchByDay] = useState<Record<string, string>>({})
@@ -375,6 +381,108 @@ function App() {
     setNewDishError('')
   }
 
+  const openSecretModal = () => {
+    setDishDraftsById(
+      Object.fromEntries(dishes.map((dish) => [dish.id, dish.navn])) as Record<
+        number,
+        string
+      >,
+    )
+    setSecretError('')
+    setIsSecretModalOpen(true)
+  }
+
+  const closeSecretModal = () => {
+    setIsSecretModalOpen(false)
+    setSecretError('')
+    setSecretBusyDishId(null)
+  }
+
+  const handleSecretTap = () => {
+    const now = Date.now()
+    const nextTapCount = now - lastSecretTapAt <= 1600 ? secretTapCount + 1 : 1
+
+    setLastSecretTapAt(now)
+    setSecretTapCount(nextTapCount)
+
+    if (nextTapCount >= 4) {
+      setSecretTapCount(0)
+      openSecretModal()
+    }
+  }
+
+  const handleUpdateDishName = async (dishId: number) => {
+    const nextName = (dishDraftsById[dishId] ?? '').trim()
+
+    if (nextName.length === 0) {
+      setSecretError('Navn må ikke være tomt.')
+      return
+    }
+
+    const currentDish = dishes.find((dish) => dish.id === dishId)
+    if (!currentDish || currentDish.navn === nextName) {
+      return
+    }
+
+    setSecretBusyDishId(dishId)
+    setSecretError('')
+
+    if (isSupabaseConfigured && supabase) {
+      const supabaseClient = supabase
+      const { error } = await supabaseClient
+        .from('dishes')
+        .update({ navn: nextName })
+        .eq('id', dishId)
+
+      if (error) {
+        setSecretError('Kunne ikke opdatere retten i databasen.')
+        setSecretBusyDishId(null)
+        return
+      }
+    }
+
+    setDishes((currentDishes) =>
+      currentDishes.map((dish) =>
+        dish.id === dishId ? { ...dish, navn: nextName } : dish,
+      ),
+    )
+    setSecretBusyDishId(null)
+  }
+
+  const handleDeleteDish = async (dishId: number) => {
+    const dishToDelete = dishes.find((dish) => dish.id === dishId)
+    if (!dishToDelete) {
+      return
+    }
+
+    const shouldDelete = window.confirm(`Slet "${dishToDelete.navn}"?`)
+    if (!shouldDelete) {
+      return
+    }
+
+    setSecretBusyDishId(dishId)
+    setSecretError('')
+
+    if (isSupabaseConfigured && supabase) {
+      const supabaseClient = supabase
+      const { error } = await supabaseClient.from('dishes').delete().eq('id', dishId)
+
+      if (error) {
+        setSecretError('Kunne ikke slette retten i databasen.')
+        setSecretBusyDishId(null)
+        return
+      }
+    }
+
+    setDishes((currentDishes) => currentDishes.filter((dish) => dish.id !== dishId))
+    setDishDraftsById((currentDrafts) => {
+      const nextDrafts = { ...currentDrafts }
+      delete nextDrafts[dishId]
+      return nextDrafts
+    })
+    setSecretBusyDishId(null)
+  }
+
   const handleCreateDish = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
@@ -462,7 +570,9 @@ function App() {
       <section className="hero-panel">
         <div className="hero-header">
           <div>
-            <p className="eyebrow">Madplan</p>
+            <button type="button" className="eyebrow-button" onClick={handleSecretTap}>
+              Madplan
+            </button>
           </div>
 
           <div className="hero-actions">
@@ -487,12 +597,12 @@ function App() {
           </div>
         </div>
 
-        <div className="hero-meta">
-          <span>{dishes.length} retter i databasen</span>
-          <span>{canEditWeek ? 'Redigerbar uge' : 'Historisk uge'}</span>
-          {isLoadingDishes ? <span>Henter data...</span> : null}
-          {dishesError ? <span>{dishesError}</span> : null}
-        </div>
+        {isLoadingDishes || dishesError ? (
+          <div className="hero-meta">
+            {isLoadingDishes ? <span>Henter data...</span> : null}
+            {dishesError ? <span>{dishesError}</span> : null}
+          </div>
+        ) : null}
       </section>
 
       <section className="planner-panel">
@@ -668,6 +778,63 @@ function App() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      ) : null}
+
+      {isSecretModalOpen ? (
+        <div className="modal-backdrop" role="presentation" onClick={closeSecretModal}>
+          <div
+            className="modal-panel admin-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="admin-dishes-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h3 id="admin-dishes-title">Rediger retter</h3>
+
+            <div className="admin-dish-list">
+              {dishes.map((dish) => (
+                <div key={dish.id} className="admin-dish-row">
+                  <input
+                    type="text"
+                    value={dishDraftsById[dish.id] ?? dish.navn}
+                    onChange={(event) =>
+                      setDishDraftsById((currentDrafts) => ({
+                        ...currentDrafts,
+                        [dish.id]: event.target.value,
+                      }))
+                    }
+                  />
+
+                  <button
+                    type="button"
+                    className="secondary"
+                    disabled={secretBusyDishId === dish.id}
+                    onClick={() => handleUpdateDishName(dish.id)}
+                  >
+                    Gem
+                  </button>
+
+                  <button
+                    type="button"
+                    className="danger"
+                    disabled={secretBusyDishId === dish.id}
+                    onClick={() => handleDeleteDish(dish.id)}
+                  >
+                    Slet
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {secretError ? <p className="modal-error">{secretError}</p> : null}
+
+            <div className="modal-actions">
+              <button type="button" className="secondary" onClick={closeSecretModal}>
+                Luk
+              </button>
+            </div>
           </div>
         </div>
       ) : null}

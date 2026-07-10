@@ -1,20 +1,20 @@
 :root {
-  --text: #544f66;
-  --text-h: #161224;
-  --muted: #716c82;
-  --bg: #f5f3fb;
-  --panel-bg: rgba(255, 255, 255, 0.82);
-  --card-bg: #ffffff;
-  --border: rgba(113, 108, 130, 0.18);
-  --soft-bg: #f4efff;
-  --soft-border: rgba(122, 92, 255, 0.18);
-  --button-bg: #f7f5ff;
-  --accent: #6d4aff;
-  --accent-bg: rgba(109, 74, 255, 0.12);
-  --accent-border: rgba(109, 74, 255, 0.35);
+  --text: #627d6a;
+  --text-h: #627d6a;
+  --muted: #c5a479;
+  --bg: #e8e8e8;
+  --panel-bg: #ded2af;
+  --card-bg: #e8e8e8;
+  --border: rgba(98, 125, 106, 0.28);
+  --soft-bg: rgba(197, 164, 121, 0.18);
+  --soft-border: rgba(98, 125, 106, 0.22);
+  --button-bg: #627d6a;
+  --accent: #c2633d;
+  --accent-bg: rgba(194, 99, 61, 0.14);
+  --accent-border: rgba(194, 99, 61, 0.45);
   --shadow:
-    rgba(31, 22, 68, 0.08) 0 18px 45px -24px,
-    rgba(31, 22, 68, 0.08) 0 10px 20px -18px;
+    rgba(98, 125, 106, 0.18) 0 16px 32px -24px,
+    rgba(98, 125, 106, 0.16) 0 8px 14px -12px;
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -32,22 +32,22 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --text: #cbc4df;
-    --text-h: #fcfbff;
-    --muted: #a49cbf;
-    --bg: #171321;
-    --panel-bg: rgba(31, 24, 45, 0.85);
-    --card-bg: #221b31;
-    --border: rgba(195, 186, 225, 0.12);
-    --soft-bg: rgba(109, 74, 255, 0.12);
-    --soft-border: rgba(154, 129, 255, 0.22);
-    --button-bg: #2a233a;
-    --accent: #a78bfa;
-    --accent-bg: rgba(167, 139, 250, 0.18);
-    --accent-border: rgba(167, 139, 250, 0.45);
+    --text: #e8e8e8;
+    --text-h: #e8e8e8;
+    --muted: #ded2af;
+    --bg: #627d6a;
+    --panel-bg: #4f6555;
+    --card-bg: #5a7361;
+    --border: rgba(232, 232, 232, 0.2);
+    --soft-bg: rgba(197, 164, 121, 0.24);
+    --soft-border: rgba(222, 210, 175, 0.3);
+    --button-bg: #c2633d;
+    --accent: #c5a479;
+    --accent-bg: rgba(197, 164, 121, 0.18);
+    --accent-border: rgba(197, 164, 121, 0.45);
     --shadow:
-      rgba(0, 0, 0, 0.35) 0 20px 50px -25px,
-      rgba(0, 0, 0, 0.3) 0 10px 22px -18px;
+      rgba(0, 0, 0, 0.3) 0 18px 40px -24px,
+      rgba(0, 0, 0, 0.25) 0 10px 20px -16px;
   }
 }
 
@@ -57,6 +57,13 @@
   margin: 0 auto;
   min-height: 100svh;
   box-sizing: border-box;
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+  #root {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 body {

@@ -4,6 +4,66 @@
   padding: 8px;
 }
 
+.auth-shell {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 8px;
+}
+
+.auth-card {
+  width: 100%;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.auth-card h1 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.auth-form {
+  display: grid;
+  gap: 8px;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 4px;
+  color: var(--text-h);
+  font-size: 0.84rem;
+}
+
+.auth-form input {
+  border-radius: 10px;
+  border: 1px solid var(--soft-border);
+  background: var(--card-bg);
+  color: var(--text-h);
+  padding: 8px;
+  font: inherit;
+}
+
+.auth-submit {
+  border-radius: 10px;
+  border: 1px solid var(--soft-border);
+  background: var(--button-bg);
+  color: var(--text-h);
+  padding: 8px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.auth-error {
+  margin: 0;
+  color: #d14f4f;
+  font-size: 0.82rem;
+}
+
 .hero-panel,
 .planner-panel {
   background: var(--panel-bg);
@@ -25,13 +85,18 @@
   align-items: flex-start;
 }
 
-.add-dish-button {
+.hero-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.icon-action-button {
   width: 36px;
   height: 36px;
   border: 1px solid var(--soft-border);
   border-radius: 999px;
   background: var(--button-bg);
-  color: var(--text-h);
+  color: #fff;
   font-size: 1.2rem;
   line-height: 1;
   display: grid;
@@ -42,9 +107,24 @@
     border-color 0.18s ease;
 }
 
-.add-dish-button:hover {
+.icon-action-button svg,
+.lock-icon-button svg,
+.recipe-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+.icon-action-button:hover:not(:disabled) {
   transform: translateY(-1px);
   border-color: var(--accent-border);
+}
+
+.icon-action-button:disabled,
+.week-nav-button:disabled,
+.lock-icon-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .eyebrow {
@@ -130,7 +210,6 @@
 
 .week-grid {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 6px;
 }
 
@@ -147,7 +226,7 @@
 .day-card {
   display: grid;
   gap: 6px;
-  min-height: 96px;
+  min-height: 55px;
   padding: 8px;
   border-radius: 10px;
   background: var(--card-bg);
@@ -198,7 +277,10 @@
 
 .recipe-link {
   flex-shrink: 0;
-  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
   text-decoration: none;
   cursor: pointer;
   opacity: 0.7;
@@ -215,6 +297,61 @@
   flex: 1;
 }
 
+.typeahead-wrapper {
+  position: relative;
+}
+
+.dish-search-input {
+  width: 100%;
+  padding: 6px;
+  background: var(--card-bg);
+  color: var(--text-h);
+  border-radius: 10px;
+  border: 1px solid var(--soft-border);
+  font: inherit;
+  font-size: 0.82rem;
+  box-sizing: border-box;
+}
+
+.typeahead-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  display: grid;
+  gap: 2px;
+  background: var(--card-bg);
+  border: 1px solid var(--soft-border);
+  border-radius: 8px;
+  padding: 4px;
+  max-height: 160px;
+  overflow-y: auto;
+  z-index: 5;
+}
+
+.typeahead-item {
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-h);
+  text-align: left;
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 5px 6px;
+  cursor: pointer;
+}
+
+.typeahead-item:hover {
+  background: var(--soft-bg);
+}
+
+.typeahead-empty {
+  margin: 0;
+  padding: 4px 6px;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+
 .select-wrapper select {
   width: 100%;
   padding: 6px;
@@ -224,6 +361,7 @@
 }
 
 .select-wrapper select:focus-visible,
+.dish-search-input:focus-visible,
 .planner-toolbar button:focus-visible,
 .lock-icon-button:focus-visible {
   outline: 2px solid var(--accent);
@@ -233,16 +371,26 @@
 .lock-icon-button {
   width: 24px;
   height: 24px;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 999px;
   border: 1px solid var(--soft-border);
   background: var(--button-bg);
+  color: #fff;
+  padding: 0;
+  line-height: 0;
+  appearance: none;
+  -webkit-appearance: none;
   cursor: pointer;
   flex-shrink: 0;
   transition:
     transform 0.18s ease,
     border-color 0.18s ease;
+}
+
+.lock-icon-button svg {
+  display: block;
 }
 
 .lock-icon-button:hover {
@@ -343,9 +491,6 @@
     grid-template-columns: auto 1fr auto;
   }
 
-  .week-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 720px) {
@@ -358,7 +503,7 @@
     align-items: stretch;
   }
 
-  .add-dish-button {
+  .hero-actions {
     align-self: flex-end;
   }
 

@@ -52,7 +52,8 @@
 }
 
 #root {
-  width: min(1440px, 100%);
+  width: min(320px, 100%);
+  max-width: 320px;
   margin: 0 auto;
   min-height: 100svh;
   box-sizing: border-box;

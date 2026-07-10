@@ -1,5 +1,6 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import dishesData from './data/dishes.json'
+import { isSupabaseConfigured, supabase } from './lib/supabaseClient'
 import './App.css'
 
 type Dish = {
@@ -82,6 +83,10 @@ function getWeekNumber(date: Date) {
 }
 
 function createInitialWeekPlan(weekStart: Date, dishList: Dish[]) {
+  if (dishList.length === 0) {
+    return {}
+  }
+
   const seed = Math.floor(weekStart.getTime() / (24 * 60 * 60 * 1000))
 
   return weekDays.reduce<WeekPlan>((plan, _day, index) => {
@@ -115,6 +120,9 @@ function App() {
   const [isDishModalOpen, setIsDishModalOpen] = useState(false)
   const [newDishNavn, setNewDishNavn] = useState('')
   const [newDishError, setNewDishError] = useState('')
+  const [dishesError, setDishesError] = useState('')
+  const [isSavingDish, setIsSavingDish] = useState(false)
+  const [isLoadingDishes, setIsLoadingDishes] = useState(isSupabaseConfigured)
   const [plansByWeek, setPlansByWeek] = useState<Record<string, WeekPlan>>(() => ({
     [getWeekKey(baseWeek)]: createInitialWeekPlan(baseWeek, initialDishes),
   }))
@@ -127,6 +135,38 @@ function App() {
   const weekPlan =
     plansByWeek[currentWeekKey] ?? createInitialWeekPlan(currentWeekStart, dishes)
   const weekNumber = getWeekNumber(currentWeekStart)
+
+  useEffect(() => {
+    if (!isSupabaseConfigured || !supabase) {
+      return
+    }
+
+    const supabaseClient = supabase
+
+    const loadDishes = async () => {
+      setIsLoadingDishes(true)
+      setDishesError('')
+
+      const { data, error } = await supabaseClient
+        .from('dishes')
+        .select('id, navn')
+        .order('id', { ascending: true })
+
+      if (error) {
+        setDishesError('Kunne ikke hente retter fra databasen.')
+        setIsLoadingDishes(false)
+        return
+      }
+
+      if (data && data.length > 0) {
+        setDishes(data)
+      }
+
+      setIsLoadingDishes(false)
+    }
+
+    void loadDishes()
+  }, [])
 
   const handleDishChange = (dayIndex: number, dishId: number) => {
     setPlansByWeek((currentPlans) => ({
@@ -154,13 +194,37 @@ function App() {
     setNewDishError('')
   }
 
-  const handleCreateDish = (event: FormEvent<HTMLFormElement>) => {
+  const handleCreateDish = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     const trimmedName = newDishNavn.trim()
 
     if (trimmedName.length === 0) {
       setNewDishError('Navn er påkrævet.')
+      return
+    }
+
+    setIsSavingDish(true)
+
+    if (isSupabaseConfigured && supabase) {
+      const supabaseClient = supabase
+      const { data, error } = await supabaseClient
+        .from('dishes')
+        .insert({ navn: trimmedName })
+        .select('id, navn')
+        .single()
+
+      if (error || !data) {
+        setNewDishError('Kunne ikke gemme retten i databasen.')
+        setIsSavingDish(false)
+        return
+      }
+
+      setDishes((currentDishes) =>
+        [...currentDishes, data].sort((left, right) => left.id - right.id),
+      )
+      setIsSavingDish(false)
+      closeDishModal()
       return
     }
 
@@ -172,6 +236,8 @@ function App() {
       ),
     )
 
+    setIsSavingDish(false)
+
     closeDishModal()
   }
 
@@ -181,12 +247,7 @@ function App() {
         <div className="hero-header">
           <div>
             <p className="eyebrow">Madplan</p>
-            <h1>Ugens retter på én side</h1>
-            <p className="hero-text">
-              Visning fra mandag til søndag med låste felter, som kan åbnes og ændres
-              via dropdown.
-            </p>
-          </div>
+                   </div>
 
           <button
             type="button"
@@ -199,9 +260,9 @@ function App() {
         </div>
 
         <div className="hero-meta">
-          <span>Uge {weekNumber}</span>
-          <span>{formatMonthRange(currentWeekStart)}</span>
           <span>{dishes.length} retter i databasen</span>
+          {isLoadingDishes ? <span>Henter data...</span> : null}
+          {dishesError ? <span>{dishesError}</span> : null}
         </div>
       </section>
 
@@ -259,6 +320,7 @@ function App() {
                           onChange={(event) =>
                             handleDishChange(index, Number(event.target.value))
                           }
+                          disabled={dishes.length === 0}
                         >
                           {dishes.map((dish) => (
                             <option key={dish.id} value={dish.id}>
@@ -339,7 +401,9 @@ function App() {
                 <button type="button" className="secondary" onClick={closeDishModal}>
                   Annuller
                 </button>
-                <button type="submit">Gem ret</button>
+                <button type="submit" disabled={isSavingDish}>
+                  {isSavingDish ? 'Gemmer...' : 'Gem ret'}
+                </button>
               </div>
             </form>
           </div>

@@ -23,6 +23,7 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_APP_PASSCODE: ${{ secrets.VITE_APP_PASSCODE }}
 
       - uses: peaceiris/actions-gh-pages@v3
         with:
